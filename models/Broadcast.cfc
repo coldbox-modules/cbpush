@@ -68,7 +68,7 @@ component accessors="true" {
         // Publish the event using the pusher service.
         pusherService.publish( 
             connectionName = getConnectionName(),
-            channelName    = getChannelName(),
+            channelName    = !isNull( getPrivateChannelName() ) ? getPrivateChannelName() : getChannelName(),
             private        = !isNull( getPrivateChannelName() ) ? true : false,
             event          = arguments.event,
             data           = arguments.data

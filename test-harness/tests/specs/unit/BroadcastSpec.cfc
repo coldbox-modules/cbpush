@@ -99,7 +99,7 @@ component extends="coldbox.system.testing.BaseTestCase" {
 					} ).toThrow( type="MissingEvent", regex="You must specify an event name when calling .publish\( event='eventName' \)\.$");
 				} );
 
-				it( "sends a validate publish event to the pusher service", function() {
+				it( "sends a publish event to the pusher service", function() {
 					pusherService.$( "publish" );
 					broadcast
 						.connection( "pusher" )
@@ -109,6 +109,22 @@ component extends="coldbox.system.testing.BaseTestCase" {
 					var passedArgs = pusherService.$callLog().publish[ 1 ];
 					expect( passedArgs.connectionName ).toBe( "pusher" ); 
 					expect( passedArgs.channelName ).toBe( "some-channel" );
+					expect( passedArgs.private ).toBeFalse();
+					expect( passedArgs.event ).toBe( "test" );
+					expect( passedArgs.data ).toBe( [ "test" ] );
+				} );
+
+				it( "sends a private publish event to the pusher service", function() {
+					pusherService.$( "publish" );
+					broadcast
+						.connection( "pusher" )
+						.private( "some-channel" )
+						.publish( event="test", data=[ "test" ] );
+
+					var passedArgs = pusherService.$callLog().publish[ 1 ];
+					expect( passedArgs.connectionName ).toBe( "pusher" ); 
+					expect( passedArgs.channelName ).toBe( "some-channel" );
+					expect( passedArgs.private ).toBeTrue();
 					expect( passedArgs.event ).toBe( "test" );
 					expect( passedArgs.data ).toBe( [ "test" ] );
 				} );
