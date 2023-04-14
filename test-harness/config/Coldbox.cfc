@@ -72,7 +72,27 @@
 		};
 
 		moduleSettings = {
-			cbpush = {
+			"cbpush" : {
+				"connections" : {
+					"pusher" : {
+                        "provider" : "pusher",
+                        "properties" : {
+                            "appId" : "",
+                            "secret" : "",
+                            "host" : "",
+                            "port" : "",
+                            "scheme" : "",
+                            "encrypted" : true,
+                            "useTLS" : true                           
+                        }
+                    },
+                    "log" : {
+                        "provider" : "log"
+                    },
+                    "null" : {
+                        "provider" : "null"
+                    }
+				}
 			}
 		};
 
