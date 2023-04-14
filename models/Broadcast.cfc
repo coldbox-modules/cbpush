@@ -9,11 +9,6 @@ component accessors="true" {
     property name="pusherService" inject="PusherService@cbpush";
 
     /**
-     * Holds the module settings
-     */
-    property name="settings" inject="coldbox:moduleSettings:cbpush";
-
-    /**
      * Holds the connection name
      */
     property name="connectionName";
