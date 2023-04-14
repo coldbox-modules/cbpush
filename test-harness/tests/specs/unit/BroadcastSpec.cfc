@@ -18,7 +18,9 @@ component extends="coldbox.system.testing.BaseTestCase" {
 		describe( "Component.cfc", function(){
 			beforeEach( function( currentSpec ){
 				setup();
-				broadcast = getInstance( "Broadcast@cbpush" );
+				broadcast = prepareMock( getInstance( "Broadcast@cbpush" ) );
+				pusherService = prepareMock( getInstance( "PusherService@cbpush" ) );
+				broadcast.$property( propertyName="pusherService", mock=pusherService );
 			} );
 
 			it( "can instantiate a component", function(){
@@ -46,6 +48,18 @@ component extends="coldbox.system.testing.BaseTestCase" {
 				var randomName = createUUID();
 				var result = broadcast.channel( randomName );
 				expect( broadcast.getChannelName() ).toBe( randomName );
+				expect( result ).toBeInstanceOf( "Broadcast" );
+			} );
+
+			it( "can get and set a private channel", function() {
+				broadcast.setPrivateChannelName( "private-test" );
+				expect( broadcast.getPrivateChannelName() ).toBe( "private-test" );
+			} );
+
+			it( "can call private() to set a channel and get a Broadcast object back", function() {
+				var randomName = createUUID();
+				var result = broadcast.private( randomName );
+				expect( broadcast.getPrivateChannelName() ).toBe( randomName );
 				expect( result ).toBeInstanceOf( "Broadcast" );
 			} );
 
@@ -83,6 +97,20 @@ component extends="coldbox.system.testing.BaseTestCase" {
 							.channel( "some-channel" )
 							.publish( data=[ "test" ] );
 					} ).toThrow( type="MissingEvent", regex="You must specify an event name when calling .publish\( event='eventName' \)\.$");
+				} );
+
+				it( "sends a validate publish event to the pusher service", function() {
+					pusherService.$( "publish" );
+					broadcast
+						.connection( "pusher" )
+						.channel( "some-channel" )
+						.publish( event="test", data=[ "test" ] );
+
+					var passedArgs = pusherService.$callLog().publish[ 1 ];
+					expect( passedArgs.connectionName ).toBe( "pusher" ); 
+					expect( passedArgs.channelName ).toBe( "some-channel" );
+					expect( passedArgs.event ).toBe( "test" );
+					expect( passedArgs.data ).toBe( [ "test" ] );
 				} );
 
 			} );
